@@ -47,6 +47,7 @@ public class Board implements Rule {
     }
 
     public Piece move(Coordinate to, Piece piece){
+        piece.isValidMove(to);
         return null;
     }
 

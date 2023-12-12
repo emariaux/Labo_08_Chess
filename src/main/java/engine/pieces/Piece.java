@@ -11,17 +11,11 @@ public class Piece implements MoveValidator{
     @Getter
     private Coordinate coordinate;
     private final PlayerColor playerColor;
-    @Override
-    public boolean isValidMove() {
-        return false;
-    }
 
-    Piece(Coordinate coordinate, PlayerColor playerColor){
+    public Piece(Coordinate coordinate, PlayerColor playerColor){
         this.coordinate = coordinate;
         this.playerColor = playerColor;
     }
-
-
 
     public List<Coordinate> path(Coordinate to){
         List<Coordinate> path = new ArrayList<>();
@@ -30,4 +24,8 @@ public class Piece implements MoveValidator{
     }
 
 
+    @Override
+    public boolean isValidMove(Coordinate to) {
+        return false;
+    }
 }

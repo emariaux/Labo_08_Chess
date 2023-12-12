@@ -1,5 +1,5 @@
 package engine.pieces;
 
 public interface MoveValidator {
-    public boolean isValidMove();
+    public boolean isValidMove(Coordinate to);
 }
