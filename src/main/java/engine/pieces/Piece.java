@@ -21,10 +21,12 @@ public class Piece implements MoveValidator{
         this.playerColor = playerColor;
     }
 
+
+
     public List<Coordinate> path(Coordinate to){
         List<Coordinate> path = new ArrayList<>();
         return  path;
-        
+
     }
 
 
