@@ -1,14 +1,23 @@
 package engine;
 
 import engine.pieces.*;
+import chess.PlayerColor;
 
 import java.util.HashMap;
 import java.util.List;
 
 
 public class Board implements Rule {
-
+    private final int size;
     private HashMap<Coordinate, Piece> chessboard = new HashMap();
+
+    public Board(int size){
+        this.size = size;
+    }
+
+    public boolean isWithinBounds(Coordinate cord) {
+        return cord.getX() >= 0 && cord.getX() < size && cord.getY() >= 0 && cord.getY() < size;
+    }
 
     @Override
     public boolean enPassant(Coordinate to, Pawn pawn) {
@@ -31,7 +40,13 @@ public class Board implements Rule {
     }
 
     public void init(){
-
+        for (PlayerColor col : PlayerColor.values()){
+            int row = (col == PlayerColor.WHITE) ? 0 : size - 1;
+            addPiece(new Rook(new Coordinate(row,0 ), col));
+            addPiece(new Knight(new Coordinate(row, 1), col));
+            addPiece(new Bishop(new Coordinate(row, 2), col));
+            addPiece(new Queen(new Coordinate(row, 3), col));
+        }
     }
 
     public void addPiece(Piece piece){
@@ -47,7 +62,9 @@ public class Board implements Rule {
     }
 
     public Piece move(Coordinate to, Piece piece){
-        piece.isValidMove(to);
+        if(isWithinBounds(to)){
+            piece.isValidMove(to);
+        }
         return null;
     }
 

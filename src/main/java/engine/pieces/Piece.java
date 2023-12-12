@@ -1,14 +1,12 @@
 package engine.pieces;
 
 import chess.PlayerColor;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Piece implements MoveValidator{
 
-    @Getter
     private Coordinate coordinate;
     private final PlayerColor playerColor;
 
@@ -26,6 +24,11 @@ public class Piece implements MoveValidator{
 
     @Override
     public boolean isValidMove(Coordinate to) {
+
         return false;
+    }
+
+    public Coordinate getCoordinate() {
+        return coordinate;
     }
 }

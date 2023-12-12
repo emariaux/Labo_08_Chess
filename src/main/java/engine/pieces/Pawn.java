@@ -1,15 +1,12 @@
 package engine.pieces;
 
 import chess.PlayerColor;
-import lombok.Getter;
 
 import java.io.IOException;
 
 public class Pawn extends Piece{
 
-    @Getter
     private boolean hasMoved = false;
-    @Getter
     private boolean lastMoveWasDoubleForward = false;
 
     public Pawn(Coordinate coordinate, PlayerColor playerColor) {
@@ -20,14 +17,16 @@ public class Pawn extends Piece{
 
     @Override
     public boolean isValidMove(Coordinate to) {
-        if(hasMoved){
+        super.isValidMove(to);
+
+        if(this.hasMoved){
             return verifyStep(to,1);
         } else if (verifyStep(to,1)) {
-            hasMoved = true;
+            this.hasMoved = true;
 
         }else if(verifyStep(to,2)){
-            hasMoved = true;
-            lastMoveWasDoubleForward = true;
+            this.hasMoved = true;
+            this.lastMoveWasDoubleForward = true;
         }else{
             return  false;
         }
@@ -43,5 +42,11 @@ public class Pawn extends Piece{
 
     }
 
+    public boolean isHasMoved() {
+        return hasMoved;
+    }
 
+    public boolean isLastMoveWasDoubleForward() {
+        return lastMoveWasDoubleForward;
+    }
 }
