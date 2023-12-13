@@ -2,8 +2,6 @@ package engine.pieces;
 
 import chess.PlayerColor;
 
-import java.io.IOException;
-
 public class Pawn extends Piece{
 
     private boolean hasMoved = false;

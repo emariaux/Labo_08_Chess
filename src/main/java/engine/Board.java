@@ -6,7 +6,6 @@ import chess.PieceType;
 import engine.pieces.*;
 import chess.PlayerColor;
 
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -24,7 +23,7 @@ public class Board implements Rule, ChessController {
 
     public Board(int size){
         this.size = size;
-        chessboard = new Piece[size][size];
+        this.chessboard = new Piece[size][size];
     }
 
     @Override
