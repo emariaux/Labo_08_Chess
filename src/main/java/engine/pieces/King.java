@@ -1,16 +1,20 @@
 package engine.pieces;
 
 import chess.PlayerColor;
-import lombok.Getter;
-import lombok.Setter;
 
 public class King extends Piece{
-
     private boolean hasMoved = false;
-
-    @Setter
-    @Getter
     private boolean isCheck = false;
+
+    public boolean isCheck() {
+        return isCheck;
+    }
+
+    public void setCheck(boolean check) {
+        isCheck = check;
+    }
+
+
 
     public King(Coordinate coordinate, PlayerColor playerColor) {
         super(coordinate, playerColor);
