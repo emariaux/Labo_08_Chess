@@ -12,9 +12,21 @@ public class King extends Piece{
     @Getter
     private boolean isCheck = false;
 
-    King(Coordinate coordinate, PlayerColor playerColor) {
+    public King(Coordinate coordinate, PlayerColor playerColor) {
         super(coordinate, playerColor);
     }
 
+    @Override
+    public boolean isValidMove(Coordinate to) {
 
+        int deltaX = to.getX() - this.getCoordinate().getX();
+        int deltaY = to.getY() - this.getCoordinate().getY();
+
+        if (Math.abs(deltaX) <= 1 && Math.abs(deltaY) <= 1 && (deltaX != 0 || deltaY != 0)) {
+            this.hasMoved = true;
+            return true;
+        }
+
+        return false;
+    }
 }
