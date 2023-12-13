@@ -1,5 +1,8 @@
 package engine;
 
+import chess.ChessController;
+import chess.ChessView;
+import chess.PieceType;
 import engine.pieces.*;
 import chess.PlayerColor;
 
@@ -7,13 +10,41 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class Board implements Rule {
+public class Board implements Rule, ChessController {
+
+    //Current turn. False = white, true = black
+    private boolean currentTurn = false;
+    private ChessView view;
+
+    private Piece[][] chessboard;
+
+
     private final int size;
-    private HashMap<Coordinate, Piece> chessboard = new HashMap();
+    //private HashMap<Coordinate, Piece> chessboard = new HashMap();
 
     public Board(int size){
         this.size = size;
+        chessboard = new Piece[size][size];
     }
+
+    @Override
+    public void start(ChessView view) {
+        this.view = view;
+        this.view.startView();
+    }
+
+    @Override
+    public boolean move(int fromX, int fromY, int toX, int toY) {
+        return false;
+    }
+
+    @Override
+    public void newGame() {
+
+        view.putPiece(PieceType.PAWN, PlayerColor.WHITE,0,1);
+
+    }
+
 
     public boolean isWithinBounds(Coordinate cord) {
         return cord.getX() >= 0 && cord.getX() < size && cord.getY() >= 0 && cord.getY() < size;
@@ -46,6 +77,7 @@ public class Board implements Rule {
             addPiece(new Knight(new Coordinate(row, 1), col));
             addPiece(new Bishop(new Coordinate(row, 2), col));
             addPiece(new Queen(new Coordinate(row, 3), col));
+            addPiece(new King(new Coordinate(row, 3), col));
         }
     }
 
@@ -71,5 +103,6 @@ public class Board implements Rule {
     public boolean isEmptyBetween(List<Coordinate> path){
         return false;
     }
+
 
 }
