@@ -18,6 +18,7 @@ public class Pawn extends Piece{
         super.isValidMove(to);
 
         if(this.hasMoved){
+            System.out.println(verifyStep(to,1));
             return verifyStep(to,1);
         } else if (verifyStep(to,1)) {
             this.hasMoved = true;

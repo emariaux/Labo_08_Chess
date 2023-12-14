@@ -34,13 +34,29 @@ public class Board implements Rule, ChessController {
 
     @Override
     public boolean move(int fromX, int fromY, int toX, int toY) {
-        return false;
+
+        Piece currentPiece = chessboard[fromX][fromY];
+        boolean canMove;
+        canMove = currentPiece.isValidMove(new Coordinate(toX, toY));
+
+        if(canMove){
+            chessboard[toX][toY] = currentPiece;
+            currentPiece.setCoordinate(new Coordinate(toX, toY));
+            chessboard[fromX][fromY] = null;
+            view.putPiece(PieceType.PAWN, PlayerColor.WHITE, toX, toY);
+            view.removePiece(fromX, fromY);
+        }
+
+
+
+        return canMove;
     }
 
     @Override
     public void newGame() {
 
         view.putPiece(PieceType.PAWN, PlayerColor.WHITE,0,1);
+        chessboard[0][1] = new Pawn(new Coordinate(0,1), PlayerColor.WHITE);
 
     }
 

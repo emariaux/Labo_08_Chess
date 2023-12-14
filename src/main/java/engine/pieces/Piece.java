@@ -31,4 +31,8 @@ public class Piece implements MoveValidator{
     public Coordinate getCoordinate() {
         return coordinate;
     }
+
+    public void setCoordinate(Coordinate coordinate) {
+        this.coordinate = coordinate;
+    }
 }
