@@ -13,17 +13,51 @@ public class Pawn extends Piece{
     }
 
 
-
     @Override
     public boolean isValidMove(Coordinate to) {
         super.isValidMove(to);
 
+        int deltaX = to.getX() - this.getCoordinate().getX();
+        int deltaY = to.getY() - this.getCoordinate().getY();
+        if(this.getPlayerColor() == PlayerColor.WHITE){
+            // Single step forward.
+            if(deltaX == 0 && deltaY == 1){
+                this.hasMoved = true;
+            // Double step forward.
+            } else if (deltaX == 0 && deltaY == 2) {
+                this.hasMoved = true;
+                this.lastMoveWasDoubleForward = true;
+            // Diagonal step forward.
+            } else if (deltaY == 1 && Math.abs(deltaX) == 1) {
+                this.hasMoved = true;
+            } else {
+                return false;
+            }
+        } else if (getPlayerColor() == PlayerColor.BLACK) {
+            // Single step downward.
+            if(deltaX == 0 && deltaY == -1){
+                this.hasMoved = true;
+            // Double step downward.
+            } else if (deltaX == 0 && deltaY == -2) {
+                this.hasMoved = true;
+                this.lastMoveWasDoubleForward = true;
+            // Diagonal step downward.
+            } else if (deltaY == -1 && Math.abs(deltaX) == 1) {
+                this.hasMoved = true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        return true;
+
+        /*
         if(this.hasMoved){
             System.out.println(verifyStep(to,1));
             return verifyStep(to,1);
         } else if (verifyStep(to,1)) {
             this.hasMoved = true;
-
         }else if(verifyStep(to,2)){
             this.hasMoved = true;
             this.lastMoveWasDoubleForward = true;
@@ -31,7 +65,7 @@ public class Pawn extends Piece{
             return  false;
         }
         return true;
-
+        */
     }
 
     private boolean verifyStep(Coordinate to, int nbSteps){

@@ -12,7 +12,7 @@ import java.util.List;
 public class Board implements Rule, ChessController {
 
     //Current turn. False = white, true = black
-    private boolean currentTurn = false;
+    private PlayerColor currentPlayer;
     private ChessView view;
 
     private Piece[][] chessboard;
@@ -24,6 +24,7 @@ public class Board implements Rule, ChessController {
     public Board(int size){
         this.size = size;
         this.chessboard = new Piece[size][size];
+        this.currentPlayer = PlayerColor.WHITE;
     }
 
     @Override
@@ -38,15 +39,16 @@ public class Board implements Rule, ChessController {
         boolean canMove;
         canMove = currentPiece.isValidMove(new Coordinate(toX, toY));
 
-        if(canMove){
+        if(canMove && currentPlayer == currentPiece.getPlayerColor()){
             chessboard[toX][toY] = currentPiece;
             currentPiece.setCoordinate(new Coordinate(toX, toY));
             chessboard[fromX][fromY] = null;
             view.putPiece(currentPiece.getPieceType(), currentPiece.getPlayerColor(), toX, toY);
             view.removePiece(fromX, fromY);
+
+            // Sets the turn to play to the other color.
+            switchPlayer();
         }
-
-
 
         return canMove;
     }
@@ -89,6 +91,9 @@ public class Board implements Rule, ChessController {
 
     }
 
+    private void switchPlayer(){
+        this.currentPlayer = (this.currentPlayer == PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE);
+    }
     public void init(){
         for (PlayerColor col : PlayerColor.values()){
             int row = (col == PlayerColor.WHITE) ? 0 : size - 1;
