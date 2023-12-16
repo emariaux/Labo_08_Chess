@@ -1,5 +1,6 @@
 package engine.pieces;
 
+import chess.PieceType;
 import chess.PlayerColor;
 
 public class Pawn extends Piece{
@@ -8,7 +9,7 @@ public class Pawn extends Piece{
     private boolean lastMoveWasDoubleForward = false;
 
     public Pawn(Coordinate coordinate, PlayerColor playerColor) {
-        super(coordinate, playerColor);
+        super(coordinate, playerColor, PieceType.PAWN);
     }
 
 

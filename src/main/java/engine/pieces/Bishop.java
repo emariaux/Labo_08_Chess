@@ -1,10 +1,11 @@
 package engine.pieces;
 
+import chess.PieceType;
 import chess.PlayerColor;
 
 public class Bishop extends Piece{
     public Bishop(Coordinate coordinate, PlayerColor playerColor) {
-        super(coordinate, playerColor);
+        super(coordinate, playerColor, PieceType.BISHOP);
     }
 
     @Override

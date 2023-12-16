@@ -1,10 +1,11 @@
 package engine.pieces;
 
+import chess.PieceType;
 import chess.PlayerColor;
 
 public class Knight extends Piece{
     public Knight(Coordinate coordinate, PlayerColor playerColor) {
-        super(coordinate, playerColor);
+        super(coordinate, playerColor, PieceType.KNIGHT);
     }
 
     @Override
