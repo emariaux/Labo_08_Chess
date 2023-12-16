@@ -121,10 +121,16 @@ public class Board implements Rule, ChessController {
     }
 
     public void removePiece(Piece piece){
-
+        int cordX = piece.getCoordinate().getX();
+        int cordY = piece.getCoordinate().getY();
+        chessboard[cordX][cordY] = null;
     }
 
     public boolean isOccupied(Coordinate coordinate){
+        if(chessboard[coordinate.getX()][coordinate.getY()] != null){
+            return true;
+        }
+
         return false;
     }
 

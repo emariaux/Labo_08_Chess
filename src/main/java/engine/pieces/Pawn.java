@@ -11,8 +11,7 @@ public class Pawn extends Piece{
     public Pawn(Coordinate coordinate, PlayerColor playerColor) {
         super(coordinate, playerColor, PieceType.PAWN);
     }
-
-
+    
     @Override
     public boolean isValidMove(Coordinate to) {
         super.isValidMove(to);
