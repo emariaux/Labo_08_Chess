@@ -36,15 +36,22 @@ public class Board implements Rule, ChessController {
     @Override
     public boolean move(int fromX, int fromY, int toX, int toY) {
         Piece currentPiece = chessboard[fromX][fromY];
+        Piece eatenPiece = null;
+
         boolean canMove;
         canMove = currentPiece.isValidMove(new Coordinate(toX, toY));
 
+        // If the piece is a pawn and the move is not valid, check if it can eat a piece
         if(currentPiece.getPieceType() == PieceType.PAWN && !canMove && isOccupied(new Coordinate(toX, toY))){
-            canMove = pawnEatPiece(new Coordinate(toX, toY), (Pawn) currentPiece);
+            eatenPiece = pawnEatPiece(new Coordinate(toX, toY), (Pawn) currentPiece);
+            if(eatenPiece != null) {
+                canMove = true;
+            }
         }
 
+        // If the move is valid, apply the move.
         if(canMove && currentPlayer == currentPiece.getPlayerColor()){
-            validateMove(currentPiece, fromX, fromY, toX, toY);
+            applyMove(currentPiece, eatenPiece, fromX, fromY, toX, toY);
         }
 
         return canMove;
@@ -142,12 +149,20 @@ public class Board implements Rule, ChessController {
         return false;
     }
 
-    private void validateMove(Piece currentPiece, int fromX, int fromY, int toX, int toY){
+    private void applyMove(Piece currentPiece, Piece eatenPiece, int fromX, int fromY, int toX, int toY){
+
+        if(eatenPiece != null){
+            eatPiece(eatenPiece.getCoordinate());
+        }
+
         chessboard[toX][toY] = currentPiece;
         currentPiece.setCoordinate(new Coordinate(toX, toY));
         chessboard[fromX][fromY] = null;
         view.putPiece(currentPiece.getPieceType(), currentPiece.getPlayerColor(), toX, toY);
         view.removePiece(fromX, fromY);
+
+
+
 
         // Sets the turn to play to the other color.
         switchPlayer();
@@ -157,22 +172,22 @@ public class Board implements Rule, ChessController {
         chessboard[eatenPieceCoordinate.getX()][eatenPieceCoordinate.getY()] = null;
     }
 
-    private boolean pawnEatPiece(Coordinate to, Pawn pawn){
+    private Piece pawnEatPiece(Coordinate to, Pawn pawn){
 
         int deltaX = to.getX() - pawn.getCoordinate().getX();
         int deltaY = to.getY() - pawn.getCoordinate().getY();
 
         if(pawn.getPlayerColor() == PlayerColor.WHITE){
             if(deltaY == 1 && Math.abs(deltaX) == 1){
-                return true;
+                return chessboard[to.getX()][to.getY()];
             }
         } else if(pawn.getPlayerColor() == PlayerColor.BLACK) {
             if (deltaY == -1 && Math.abs(deltaX) == 1) {
-                return true;
+                return chessboard[to.getX()][to.getY()];
             }
         }
 
-        return false;
+        return null;
     }
 
 
