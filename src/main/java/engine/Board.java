@@ -39,15 +39,12 @@ public class Board implements Rule, ChessController {
         boolean canMove;
         canMove = currentPiece.isValidMove(new Coordinate(toX, toY));
 
-        if(canMove && currentPlayer == currentPiece.getPlayerColor()){
-            chessboard[toX][toY] = currentPiece;
-            currentPiece.setCoordinate(new Coordinate(toX, toY));
-            chessboard[fromX][fromY] = null;
-            view.putPiece(currentPiece.getPieceType(), currentPiece.getPlayerColor(), toX, toY);
-            view.removePiece(fromX, fromY);
+        if(currentPiece.getPieceType() == PieceType.PAWN && !canMove && isOccupied(new Coordinate(toX, toY))){
+            canMove = pawnEatPiece(new Coordinate(toX, toY), (Pawn) currentPiece);
+        }
 
-            // Sets the turn to play to the other color.
-            switchPlayer();
+        if(canMove && currentPlayer == currentPiece.getPlayerColor()){
+            validateMove(currentPiece, fromX, fromY, toX, toY);
         }
 
         return canMove;
@@ -142,6 +139,39 @@ public class Board implements Rule, ChessController {
     }
 
     public boolean isEmptyBetween(List<Coordinate> path){
+        return false;
+    }
+
+    private void validateMove(Piece currentPiece, int fromX, int fromY, int toX, int toY){
+        chessboard[toX][toY] = currentPiece;
+        currentPiece.setCoordinate(new Coordinate(toX, toY));
+        chessboard[fromX][fromY] = null;
+        view.putPiece(currentPiece.getPieceType(), currentPiece.getPlayerColor(), toX, toY);
+        view.removePiece(fromX, fromY);
+
+        // Sets the turn to play to the other color.
+        switchPlayer();
+    }
+
+    private void eatPiece(Coordinate eatenPieceCoordinate){
+        chessboard[eatenPieceCoordinate.getX()][eatenPieceCoordinate.getY()] = null;
+    }
+
+    private boolean pawnEatPiece(Coordinate to, Pawn pawn){
+
+        int deltaX = to.getX() - pawn.getCoordinate().getX();
+        int deltaY = to.getY() - pawn.getCoordinate().getY();
+
+        if(pawn.getPlayerColor() == PlayerColor.WHITE){
+            if(deltaY == 1 && Math.abs(deltaX) == 1){
+                return true;
+            }
+        } else if(pawn.getPlayerColor() == PlayerColor.BLACK) {
+            if (deltaY == -1 && Math.abs(deltaX) == 1) {
+                return true;
+            }
+        }
+
         return false;
     }
 

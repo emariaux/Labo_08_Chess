@@ -27,9 +27,9 @@ public class Pawn extends Piece{
                 this.hasMoved = true;
                 this.lastMoveWasDoubleForward = true;
             // Diagonal step forward.
-            } else if (deltaY == 1 && Math.abs(deltaX) == 1) {
+            }/* else if (deltaY == 1 && Math.abs(deltaX) == 1) {
                 this.hasMoved = true;
-            } else {
+            }*/ else {
                 return false;
             }
         } else if (getPlayerColor() == PlayerColor.BLACK) {
@@ -41,9 +41,9 @@ public class Pawn extends Piece{
                 this.hasMoved = true;
                 this.lastMoveWasDoubleForward = true;
             // Diagonal step downward.
-            } else if (deltaY == -1 && Math.abs(deltaX) == 1) {
+            }/* else if (deltaY == -1 && Math.abs(deltaX) == 1) {
                 this.hasMoved = true;
-            }
+            }*/
             else {
                 return false;
             }
