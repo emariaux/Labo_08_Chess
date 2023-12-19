@@ -49,8 +49,13 @@ public class Board implements Rule, ChessController {
             }
         }
 
+
+
         // If the move is valid, apply the move.
         if(canMove && currentPlayer == currentPiece.getPlayerColor()){
+            if(isOccupied(new Coordinate(toX, toY))){
+                eatenPiece = chessboard[toX][toY];
+            }
             applyMove(currentPiece, eatenPiece, fromX, fromY, toX, toY);
         }
 
@@ -152,7 +157,7 @@ public class Board implements Rule, ChessController {
     private void applyMove(Piece currentPiece, Piece eatenPiece, int fromX, int fromY, int toX, int toY){
 
         if(eatenPiece != null){
-            eatPiece(eatenPiece.getCoordinate());
+            removePiece(eatenPiece);
         }
 
         chessboard[toX][toY] = currentPiece;
@@ -166,10 +171,6 @@ public class Board implements Rule, ChessController {
 
         // Sets the turn to play to the other color.
         switchPlayer();
-    }
-
-    private void eatPiece(Coordinate eatenPieceCoordinate){
-        chessboard[eatenPieceCoordinate.getX()][eatenPieceCoordinate.getY()] = null;
     }
 
     private Piece pawnEatPiece(Coordinate to, Pawn pawn){
