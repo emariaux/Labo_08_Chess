@@ -18,9 +18,7 @@ public class Board implements Rule, ChessController {
     // The chessboard is represented as a 2D array of pieces.
     private Piece[][] chessboard;
 
-
     private final int size;
-    //private HashMap<Coordinate, Piece> chessboard = new HashMap();
 
     public Board(int size){
         this.size = size;
