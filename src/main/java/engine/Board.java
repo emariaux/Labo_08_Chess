@@ -15,6 +15,7 @@ public class Board implements Rule, ChessController {
     private PlayerColor currentPlayer;
     private ChessView view;
 
+    // The chessboard is represented as a 2D array of pieces.
     private Piece[][] chessboard;
 
 
@@ -56,9 +57,6 @@ public class Board implements Rule, ChessController {
                 canMove = true;
             }
         }
-
-
-
         // If the move is valid, apply the move.
         if(canMove && currentPlayer == currentPiece.getPlayerColor()){
             if(isOccupied(new Coordinate(toX, toY))){

@@ -22,9 +22,7 @@ public class Rook extends Piece{
             this.hasMoved = true;
             return true;
         }
-
-            return false;
-
+        return false;
     }
 
     public boolean isHasMoved() {

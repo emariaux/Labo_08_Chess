@@ -27,9 +27,7 @@ public class Pawn extends Piece{
                 this.hasMoved = true;
                 this.lastMoveWasDoubleForward = true;
             // Diagonal step forward.
-            }/* else if (deltaY == 1 && Math.abs(deltaX) == 1) {
-                this.hasMoved = true;
-            }*/ else {
+            } else {
                 return false;
             }
         } else if (getPlayerColor() == PlayerColor.BLACK) {
@@ -41,30 +39,12 @@ public class Pawn extends Piece{
                 this.hasMoved = true;
                 this.lastMoveWasDoubleForward = true;
             // Diagonal step downward.
-            }/* else if (deltaY == -1 && Math.abs(deltaX) == 1) {
-                this.hasMoved = true;
-            }*/
-            else {
+            } else {
                 return false;
             }
         }
 
         return true;
-
-        /*
-        if(this.hasMoved){
-            System.out.println(verifyStep(to,1));
-            return verifyStep(to,1);
-        } else if (verifyStep(to,1)) {
-            this.hasMoved = true;
-        }else if(verifyStep(to,2)){
-            this.hasMoved = true;
-            this.lastMoveWasDoubleForward = true;
-        }else{
-            return  false;
-        }
-        return true;
-        */
     }
 
     private boolean verifyStep(Coordinate to, int nbSteps){

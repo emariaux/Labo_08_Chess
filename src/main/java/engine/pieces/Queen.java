@@ -20,7 +20,6 @@ public class Queen extends Piece{
                 && (deltaX != 0 || deltaY != 0)){
             return true;
         }
-
         return false;
     }
 }
