@@ -33,6 +33,14 @@ public class Board implements Rule, ChessController {
         this.view.startView();
     }
 
+    /***
+     * Moves a piece from one coordinate to another.
+     * @param fromX : The x coordinate of the piece to move.
+     * @param fromY : The y coordinate of the piece to move.
+     * @param toX   : The x coordinate of the destination.
+     * @param toY   : The y coordinate of the destination.
+     * @return      : True if the move was successful, false otherwise.
+     */
     @Override
     public boolean move(int fromX, int fromY, int toX, int toY) {
         Piece currentPiece = chessboard[fromX][fromY];
@@ -62,6 +70,9 @@ public class Board implements Rule, ChessController {
         return canMove;
     }
 
+    /***
+     * Starts a new game.
+     */
     @Override
     public void newGame() {
         init();
@@ -100,9 +111,16 @@ public class Board implements Rule, ChessController {
 
     }
 
+    /***
+     * Switches the current player.
+     */
     private void switchPlayer(){
         this.currentPlayer = (this.currentPlayer == PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE);
     }
+
+    /***
+     * Initializes the chessboard with the starting pieces.
+     */
     public void init(){
         for (PlayerColor col : PlayerColor.values()){
             int row = (col == PlayerColor.WHITE) ? 0 : size - 1;
@@ -123,18 +141,31 @@ public class Board implements Rule, ChessController {
         }
     }
 
+    /***
+     * Adds a piece to the chessboard.
+     * @param piece : The piece to add.
+     */
     public void addPiece(Piece piece){
         int cordX = piece.getCoordinate().getX();
         int cordY = piece.getCoordinate().getY();
         chessboard[cordX][cordY] = piece;
     }
 
+    /***
+     * Removes a piece from the chessboard.
+     * @param piece : The piece to remove.
+     */
     public void removePiece(Piece piece){
         int cordX = piece.getCoordinate().getX();
         int cordY = piece.getCoordinate().getY();
         chessboard[cordX][cordY] = null;
     }
 
+    /**
+     * Checks if a coordinate is occupied by a piece.
+     * @param coordinate : The coordinate to check.
+     * @return           : True if the coordinate is occupied, false otherwise.
+     */
     public boolean isOccupied(Coordinate coordinate){
         if(chessboard[coordinate.getX()][coordinate.getY()] != null){
             return true;
@@ -143,17 +174,24 @@ public class Board implements Rule, ChessController {
         return false;
     }
 
-    public Piece move(Coordinate to, Piece piece){
-        if(isWithinBounds(to)){
-            piece.isValidMove(to);
-        }
-        return null;
-    }
-
+    /***
+     * Checks if a path is empty between two coordinates.
+     * @param path : The path to check.
+     * @return     : True if the path is empty, false otherwise.
+     */
     public boolean isEmptyBetween(List<Coordinate> path){
         return false;
     }
 
+    /***
+     * Applies a move to the chessboard.
+     * @param currentPiece  : The piece to move.
+     * @param eatenPiece    : The piece to eat.
+     * @param fromX         : The x coordinate of the piece to move.
+     * @param fromY         : The y coordinate of the piece to move.
+     * @param toX           : The x coordinate of the destination.
+     * @param toY           : The y coordinate of the destination.
+     */
     private void applyMove(Piece currentPiece, Piece eatenPiece, int fromX, int fromY, int toX, int toY){
 
         if(eatenPiece != null){
@@ -167,12 +205,16 @@ public class Board implements Rule, ChessController {
         view.removePiece(fromX, fromY);
 
 
-
-
         // Sets the turn to play to the other color.
         switchPlayer();
     }
 
+    /***
+     * Checks if a pawn can eat a piece.
+     * @param to    : The coordinate to check.
+     * @param pawn  : The pawn to check.
+     * @return      : The piece to eat if the pawn can eat, null otherwise.
+     */
     private Piece pawnEatPiece(Coordinate to, Pawn pawn){
 
         int deltaX = to.getX() - pawn.getCoordinate().getX();
