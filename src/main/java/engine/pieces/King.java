@@ -3,6 +3,8 @@ package engine.pieces;
 import chess.PieceType;
 import chess.PlayerColor;
 
+import java.util.List;
+
 public class King extends Piece{
     private boolean hasMoved = false;
     private boolean isCheck = false;

@@ -55,6 +55,15 @@ public class Board implements Rule, ChessController {
                 canMove = true;
             }
         }
+
+        //check if si empty between the two coordinates for bishop, rook and queen
+        if(canMove && (currentPiece.getPieceType() == PieceType.BISHOP
+                || currentPiece.getPieceType() == PieceType.ROOK
+                || currentPiece.getPieceType() == PieceType.QUEEN)){
+            List<Coordinate> path = currentPiece.path(new Coordinate(toX, toY));
+            canMove = isEmptyBetween(path);
+        }
+
         // If the move is valid, apply the move.
         if(canMove && currentPlayer == currentPiece.getPlayerColor()){
             if(isOccupied(new Coordinate(toX, toY))){
@@ -180,7 +189,14 @@ public class Board implements Rule, ChessController {
      * @return     : True if the path is empty, false otherwise.
      */
     public boolean isEmptyBetween(List<Coordinate> path){
-        return false;
+
+        for(Coordinate cord : path){
+            if(isOccupied(cord)){
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /***
