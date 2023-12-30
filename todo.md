@@ -12,4 +12,4 @@ Reste à faire :
 
 [x] Bloquer de sauter par dessus une pièce 
 
-[] check Piece à la destination si pas même couleur pour ne pas manger son allié
+[X] check Piece à la destination si pas même couleur pour ne pas manger son allié

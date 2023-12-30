@@ -44,9 +44,18 @@ public class Board implements Rule, ChessController {
     public boolean move(int fromX, int fromY, int toX, int toY) {
         Piece currentPiece = chessboard[fromX][fromY];
         Piece eatenPiece = null;
-
         boolean canMove;
+
+
+
+
         canMove = currentPiece.isValidMove(new Coordinate(toX, toY));
+
+        // If the move is valid, check if the destination is occupied by a piece of the same color.
+        if(canMove && chessboard[toX][toY] != null
+                && currentPiece.getPlayerColor() == chessboard[toX][toY].getPlayerColor() ){
+            return false;
+        }
 
         // If the piece is a pawn and the move is not valid, check if it can eat a piece
         if(currentPiece.getPieceType() == PieceType.PAWN && !canMove && isOccupied(new Coordinate(toX, toY))){
