@@ -71,6 +71,9 @@ public class Board implements Rule, ChessController {
      */
     @Override
     public void newGame() {
+        this.chessboard = new Piece[size][size];
+        this.currentPlayer = PlayerColor.WHITE;
+
         init();
 
         for(int i = 0; i < chessboard.length; ++i){
@@ -118,6 +121,7 @@ public class Board implements Rule, ChessController {
      * Initializes the chessboard with the starting pieces.
      */
     public void init(){
+
         for (PlayerColor col : PlayerColor.values()){
             int row = (col == PlayerColor.WHITE) ? 0 : size - 1;
             addPiece(new Rook(new Coordinate(0, row ), col));
