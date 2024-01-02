@@ -73,6 +73,8 @@ public class Board implements Rule, ChessController {
             canMove = isEmptyBetween(path);
         }
 
+
+
         // If the move is valid, apply the move.
         if(canMove && currentPlayer == currentPiece.getPlayerColor()){
             if(isOccupied(new Coordinate(toX, toY))){
