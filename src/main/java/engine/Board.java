@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Board implements Rule, ChessController {
 
-    //Current turn. False = white, true = black
+
     private PlayerColor currentPlayer;
     private ChessView view;
 
@@ -19,6 +19,9 @@ public class Board implements Rule, ChessController {
     private Piece[][] chessboard;
 
     private final int size;
+
+    private King whiteKing;
+    private King blackKing;
 
     public Board(int size){
         this.size = size;
@@ -46,8 +49,9 @@ public class Board implements Rule, ChessController {
         Piece eatenPiece = null;
         boolean canMove;
 
-
-
+        if(chessboard[fromX][fromY] == null){
+            return false;
+        }
 
         canMove = currentPiece.isValidMove(new Coordinate(toX, toY));
 
@@ -98,7 +102,13 @@ public class Board implements Rule, ChessController {
             if(isOccupied(new Coordinate(toX, toY))){
                 eatenPiece = chessboard[toX][toY];
             }
-            applyMove(currentPiece, eatenPiece, fromX, fromY, toX, toY);
+            if(simulateMoveCheck(currentPiece, eatenPiece, fromX, fromY, toX, toY)){
+                applyMove(currentPiece, eatenPiece, fromX, fromY, toX, toY);
+            }else{
+                canMove = false;
+            }
+
+
         }
 
         return canMove;
@@ -209,6 +219,8 @@ public class Board implements Rule, ChessController {
                 addPiece(new Pawn(new Coordinate(i, pawnRow), col));
             }
         }
+        whiteKing = (King) chessboard[4][0];
+        blackKing = (King) chessboard[4][7];
     }
 
     /***
@@ -238,11 +250,7 @@ public class Board implements Rule, ChessController {
      * @return           : True if the coordinate is occupied, false otherwise.
      */
     public boolean isOccupied(Coordinate coordinate){
-        if(chessboard[coordinate.getX()][coordinate.getY()] != null){
-            return true;
-        }
-
-        return false;
+        return chessboard[coordinate.getX()][coordinate.getY()] != null;
     }
 
     /***
@@ -310,6 +318,204 @@ public class Board implements Rule, ChessController {
 
         return null;
     }
+
+    private boolean verifyCheck(){
+
+        King king = currentPlayer == PlayerColor.WHITE ? whiteKing : blackKing;
+
+        if(horizontalVerticalCheck(king)){
+            setCheck(king);
+            return true;
+        }
+
+        if(diagonalCheck(king)){
+            setCheck(king);
+            return true;
+        }
+
+        if(knightCheck(king)){
+            setCheck(king);
+            return true;
+        }
+
+        if(pawnCheck(king)){
+            setCheck(king);
+            return true;
+        }
+
+
+
+        return false;
+    }
+
+    private void setCheck(King king){
+        king.setCheck(true);
+
+        if(king.getPlayerColor() == PlayerColor.WHITE){
+            view.displayMessage("Echec roi blanc");
+        } else {
+            view.displayMessage("Echec roi noir");
+        }
+    }
+
+    private boolean horizontalVerticalCheck(King king) {
+        int kingX = king.getCoordinate().getX();
+        int kingY = king.getCoordinate().getY();
+
+        // Définir les directions horizontales et verticales
+        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}; // droite, gauche, bas, haut
+
+        // Parcourir chaque direction horizontale et verticale
+        for (int[] direction : directions) {
+            int dx = direction[0];
+            int dy = direction[1];
+            int x = kingX;
+            int y = kingY;
+
+            // Parcourir la ligne ou la colonne
+            while (x >= 0 && x < 8 && y >= 0 && y < 8) {
+                x += dx;
+                y += dy;
+
+                // Vérifier si la case est dans les limites et occupée
+                if (x >= 0 && x < 8 && y >= 0 && y < 8 && chessboard[x][y] != null) {
+                    Piece piece = chessboard[x][y];
+                    // Vérifier si la pièce est une menace (Rook ou Queen de couleur opposée)
+                    if (piece.getPlayerColor() != king.getPlayerColor() &&
+                            (piece.getPieceType() == PieceType.ROOK || piece.getPieceType() == PieceType.QUEEN)) {
+                        return true; // Roi en échec par une pièce horizontale/verticale
+                    }
+                    break; // S'il y a une pièce, arrêter de regarder plus loin dans cette direction
+                }
+            }
+        }
+
+        return false; // Aucune menace trouvée horizontalement ou verticalement
+    }
+
+
+    private boolean diagonalCheck(King king) {
+        int kingX = king.getCoordinate().getX();
+        int kingY = king.getCoordinate().getY();
+
+        // Définition des directions diagonales : (dx, dy)
+        int[][] directions = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+
+        // Parcourir chaque direction diagonale
+        for (int[] direction : directions) {
+            int dx = direction[0];
+            int dy = direction[1];
+            int x = kingX;
+            int y = kingY;
+
+            // Parcourir la diagonale
+            while (x >= 0 && x < 8 && y >= 0 && y < 8) {
+                x += dx;
+                y += dy;
+
+                // Vérifier si la case est dans les limites du plateau et occupée
+                if (x >= 0 && x < 8 && y >= 0 && y < 8 && chessboard[x][y] != null) {
+                    Piece piece = chessboard[x][y];
+                    // Vérifier si la pièce est une menace (Bishop ou Queen de couleur opposée)
+                    if (piece.getPlayerColor() != king.getPlayerColor() &&
+                            (piece.getPieceType() == PieceType.BISHOP || piece.getPieceType() == PieceType.QUEEN)) {
+                        return true; // Roi en échec par une pièce diagonale
+                    }
+                    break; // S'il y a une pièce sur la diagonale, arrêter de regarder plus loin
+                }
+            }
+        }
+
+        return false; // Aucune menace trouvée en diagonale
+    }
+
+    private boolean knightCheck(King king) {
+        int kingX = king.getCoordinate().getX();
+        int kingY = king.getCoordinate().getY();
+
+        // Les mouvements possibles d'un cavalier à partir d'une position donnée
+        int[][] knightMoves = {
+                {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, // Mouvements verticaux longs
+                {1, 2}, {-1, 2}, {1, -2}, {-1, -2}  // Mouvements horizontaux longs
+        };
+
+        // Vérifier chaque mouvement possible du cavalier
+        for (int[] move : knightMoves) {
+            int x = kingX + move[0];
+            int y = kingY + move[1];
+
+            // Vérifier si la position est dans les limites du plateau
+            if (x >= 0 && x < 8 && y >= 0 && y < 8) {
+                Piece piece = chessboard[x][y];
+                // Vérifier si une pièce est un cavalier ennemi
+                if (piece != null && piece.getPlayerColor() != king.getPlayerColor() &&
+                        piece.getPieceType() == PieceType.KNIGHT) {
+                    return true; // Le roi est en échec par un cavalier
+                }
+            }
+        }
+
+        return false; // Aucun cavalier ennemi menaçant trouvé
+    }
+
+    private boolean pawnCheck(King king) {
+        int kingX = king.getCoordinate().getX();
+        int kingY = king.getCoordinate().getY();
+        PlayerColor kingColor = king.getPlayerColor();
+
+        // Déterminer la direction de l'attaque du pion en fonction de la couleur du roi
+        int pawnDirection = (kingColor == PlayerColor.WHITE) ? 1 : -1; // Les pions blancs se déplacent vers le haut (-1), les noirs vers le bas (+1)
+
+        // Les positions en diagonale où un pion pourrait attaquer
+        int[][] pawnAttacks = {
+                {1, pawnDirection},  // diagonale droite
+                {-1, pawnDirection}  // diagonale gauche
+        };
+
+        // Vérifier les deux cases en diagonale devant le roi pour une menace de pion
+        for (int[] attack : pawnAttacks) {
+            int x = kingX + attack[0];
+            int y = kingY + attack[1];
+
+            // Vérifier si la position est dans les limites du plateau
+            if (x >= 0 && x < 8 && y >= 0 && y < 8) {
+                Piece piece = chessboard[x][y];
+                // Vérifier si une pièce est un pion ennemi
+                if (piece != null && piece.getPlayerColor() != kingColor &&
+                        piece.getPieceType() == PieceType.PAWN) {
+                    return true; // Le roi est en échec par un pion
+                }
+            }
+        }
+
+        return false; // Aucun pion ennemi menaçant trouvé
+    }
+
+
+    private boolean simulateMoveCheck(Piece currentPiece, Piece eatenPiece, int fromX, int fromY, int toX, int toY){
+
+        boolean valideMove;
+
+        Coordinate currentPieceCoordBCK = currentPiece.getCoordinate();
+
+        if(eatenPiece != null){
+            chessboard[eatenPiece.getCoordinate().getX()][eatenPiece.getCoordinate().getY()] = null;
+        }
+
+        chessboard[toX][toY] = currentPiece;
+        currentPiece.setCoordinate(new Coordinate(toX, toY));
+        chessboard[fromX][fromY] = null;
+
+        valideMove = !verifyCheck();
+
+        if (!valideMove) {
+            currentPiece.setCoordinate(currentPieceCoordBCK);
+            chessboard[fromX][fromY] = currentPiece;
+            chessboard[toX][toY] = eatenPiece;
+        }
+        return valideMove;
+    }
+
 
 
 }
