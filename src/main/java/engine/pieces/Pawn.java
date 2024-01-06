@@ -63,4 +63,9 @@ public class Pawn extends Piece{
     public boolean isLastMoveWasDoubleForward() {
         return lastMoveWasDoubleForward;
     }
+
+    @Override
+    public String textValue() {
+        return "Pawn";
+    }
 }

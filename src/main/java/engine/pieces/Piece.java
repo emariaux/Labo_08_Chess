@@ -6,7 +6,7 @@ import chess.PieceType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Piece implements MoveValidator{
+public abstract class Piece implements MoveValidator{
 
     private Coordinate coordinate;
     private final PlayerColor playerColor;
@@ -26,10 +26,7 @@ public class Piece implements MoveValidator{
         this.pieceType = pieceType;
     }
 
-    public List<Coordinate> path(Coordinate to){
-        List<Coordinate> path = new ArrayList<>();
-        return  path;
-    }
+    public abstract List<Coordinate> path(Coordinate to);
 
     @Override
     public boolean isValidMove(Coordinate to) {
@@ -44,4 +41,6 @@ public class Piece implements MoveValidator{
     public void setCoordinate(Coordinate coordinate) {
         this.coordinate = coordinate;
     }
+
+    public abstract String textValue();
 }

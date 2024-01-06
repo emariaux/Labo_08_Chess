@@ -41,5 +41,10 @@ public class King extends Piece{
         return false;
     }
 
+    @Override
+    public String textValue() {
+        return "King";
+    }
+
 
 }

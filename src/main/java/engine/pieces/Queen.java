@@ -53,4 +53,9 @@ public class Queen extends Piece{
 
         return path;
     }
+
+    @Override
+    public String textValue() {
+        return "Queen";
+    }
 }

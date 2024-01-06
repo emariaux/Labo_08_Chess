@@ -104,6 +104,9 @@ public class Board implements Rule, ChessController {
             }
             if(simulateMoveCheck(currentPiece, eatenPiece, fromX, fromY, toX, toY)){
                 applyMove(currentPiece, eatenPiece, fromX, fromY, toX, toY);
+                if(currentPiece.getPieceType() == PieceType.PAWN) {
+                    checkPromote((Pawn) currentPiece);
+                }
             }else{
                 canMove = false;
             }
@@ -157,9 +160,43 @@ public class Board implements Rule, ChessController {
         return null;
     }
 
+
+    public void checkPromote(Pawn pawn) {
+        for (int i = 0; i < 8; i++) {
+            Piece piece = chessboard[i][7]; // 8ème rangée pour les pions blancs
+            if (piece != null && piece.getPieceType() == PieceType.PAWN && piece.getPlayerColor() == PlayerColor.WHITE) {
+                promote((Pawn) piece);
+            }
+        }
+
+        // Vérifier la première rangée pour les promotions de pions noirs
+        for (int i = 0; i < 8; i++) {
+            Piece piece = chessboard[i][0]; // 1ère rangée pour les pions noirs
+            if (piece != null && piece.getPieceType() == PieceType.PAWN && piece.getPlayerColor() == PlayerColor.BLACK) {
+                promote((Pawn) piece);
+            }
+        }
+    }
+
     @Override
     public void promote(Pawn pawn) {
+        Piece[] choices = {
+                new Queen(pawn.getCoordinate(), pawn.getPlayerColor()),
+                new Knight(pawn.getCoordinate(), pawn.getPlayerColor()),
+                new Rook(pawn.getCoordinate(), pawn.getPlayerColor()),
+                new Bishop(pawn.getCoordinate(), pawn.getPlayerColor())
+        };
+        List<Piece> pieces = List.of(choices);
 
+        Piece userChoice;
+
+
+
+        do {
+            userChoice = view.askUser("Promotion", "Choose a piece to promote to", choices);
+        } while (userChoice == null);
+
+        chessboard[pawn.getCoordinate().getX()][pawn.getCoordinate().getY()] = userChoice;
     }
 
     @Override
