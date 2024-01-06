@@ -3,7 +3,12 @@ package engine.pieces;
 import chess.PieceType;
 import chess.PlayerColor;
 
+import java.util.List;
+
 public class Pawn extends Piece{
+    public List<Coordinate> path(Coordinate to){
+        return null;
+    }
 
     private boolean hasMoved = false;
     private boolean lastMoveWasDoubleForward = false;

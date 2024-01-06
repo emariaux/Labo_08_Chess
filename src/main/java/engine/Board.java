@@ -126,14 +126,6 @@ public class Board implements Rule, ChessController {
         this.currentPlayer = PlayerColor.WHITE;
 
         init();
-
-        for(int i = 0; i < chessboard.length; ++i){
-            for(int j = 0; j < chessboard[i].length; ++j){
-                if(chessboard[i][j] != null){
-                   view.putPiece(chessboard[i][j].getPieceType(), chessboard[i][j].getPlayerColor(), chessboard[i][j].getCoordinate().getX(), chessboard[i][j].getCoordinate().getY());
-                }
-            }
-        }
     }
 
 
@@ -190,13 +182,13 @@ public class Board implements Rule, ChessController {
 
         Piece userChoice;
 
-
-
         do {
             userChoice = view.askUser("Promotion", "Choose a piece to promote to", choices);
         } while (userChoice == null);
 
-        chessboard[pawn.getCoordinate().getX()][pawn.getCoordinate().getY()] = userChoice;
+        //chessboard[pawn.getCoordinate().getX()][pawn.getCoordinate().getY()] = userChoice;
+        removePiece(pawn);
+        addPiece(userChoice);
     }
 
     @Override
@@ -268,6 +260,7 @@ public class Board implements Rule, ChessController {
         int cordX = piece.getCoordinate().getX();
         int cordY = piece.getCoordinate().getY();
         chessboard[cordX][cordY] = piece;
+        view.putPiece(piece.getPieceType(), piece.getPlayerColor(), cordX, cordY);
     }
 
     /***

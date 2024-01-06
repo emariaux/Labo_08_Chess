@@ -1,12 +1,13 @@
 package engine.pieces;
 
+import chess.ChessView;
 import chess.PlayerColor;
 import chess.PieceType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Piece implements MoveValidator{
+public abstract class Piece implements MoveValidator, ChessView.UserChoice {
 
     private Coordinate coordinate;
     private final PlayerColor playerColor;

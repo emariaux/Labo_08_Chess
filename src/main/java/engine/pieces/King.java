@@ -41,6 +41,9 @@ public class King extends Piece{
         return false;
     }
 
+    public List<Coordinate> path(Coordinate to){
+        return null;
+    }
     @Override
     public String textValue() {
         return "King";

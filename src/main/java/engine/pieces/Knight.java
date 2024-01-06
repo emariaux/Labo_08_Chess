@@ -3,6 +3,8 @@ package engine.pieces;
 import chess.PieceType;
 import chess.PlayerColor;
 
+import java.util.List;
+
 public class Knight extends Piece{
     public Knight(Coordinate coordinate, PlayerColor playerColor) {
         super(coordinate, playerColor, PieceType.KNIGHT);
@@ -22,6 +24,10 @@ public class Knight extends Piece{
         }
 
         return false;
+    }
+
+    public List<Coordinate> path(Coordinate to){
+        return null;
     }
 
     @Override
