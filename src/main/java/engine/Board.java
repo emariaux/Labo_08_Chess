@@ -2,7 +2,6 @@ package engine;
 
 import chess.ChessController;
 import chess.ChessView;
-import chess.PieceType;
 import engine.pieces.*;
 import chess.PlayerColor;
 
@@ -10,8 +9,6 @@ import java.util.List;
 
 
 public class Board implements Rule, ChessController {
-
-
     private PlayerColor currentPlayer;
     private ChessView view;
 
