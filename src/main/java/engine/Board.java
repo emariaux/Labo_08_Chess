@@ -62,8 +62,9 @@ public class Board implements Rule, ChessController {
         }
 
         // If the move is valid, check if the piece is a king and if it can castle.
-        if(!canMove && currentPiece.getPieceType() == PieceType.KING
-                && chessboard[toX][toY].getPieceType() == PieceType.ROOK
+        if(!canMove && currentPiece instanceof King //&& currentPiece.getPieceType() == PieceType.KING
+                && chessboard[toX][toY] instanceof Rook
+                //&& chessboard[toX][toY].getPieceType() == PieceType.ROOK
                 && currentPiece.getPlayerColor() == chessboard[toX][toY].getPlayerColor()) {
             if (toX == 7) {
                 switchPlayer();
@@ -75,7 +76,8 @@ public class Board implements Rule, ChessController {
         }
 
         // If the piece is a pawn and the move is not valid, check if it can eat a piece
-        if(currentPiece.getPieceType() == PieceType.PAWN && !canMove){
+        //if(currentPiece.getPieceType() == PieceType.PAWN && !canMove){
+        if(currentPiece instanceof Pawn && !canMove){
             if(isOccupied(new Coordinate(toX, toY))){
                 eatenPiece = pawnEatPiece(new Coordinate(toX, toY), (Pawn) currentPiece);
             }else{
@@ -88,9 +90,12 @@ public class Board implements Rule, ChessController {
         }
 
         //check if si empty between the two coordinates for bishop, rook and queen
+        /**
         if(canMove && (currentPiece.getPieceType() == PieceType.BISHOP
                 || currentPiece.getPieceType() == PieceType.ROOK
                 || currentPiece.getPieceType() == PieceType.QUEEN)){
+         **/
+        if(canMove && (currentPiece instanceof Bishop || currentPiece instanceof Rook || currentPiece instanceof Queen)){
             List<Coordinate> path = currentPiece.path(new Coordinate(toX, toY));
             canMove = isEmptyBetween(path);
         }
@@ -104,7 +109,8 @@ public class Board implements Rule, ChessController {
             }
             if(simulateMoveCheck(currentPiece, eatenPiece, fromX, fromY, toX, toY)){
                 applyMove(currentPiece, eatenPiece, fromX, fromY, toX, toY);
-                if(currentPiece.getPieceType() == PieceType.PAWN) {
+                //if(currentPiece.getPieceType() == PieceType.PAWN) {
+                if(currentPiece instanceof Pawn){
                     checkPromote((Pawn) currentPiece);
                 }
             }else{
@@ -142,7 +148,8 @@ public class Board implements Rule, ChessController {
 
         if(isOccupied(targetCoord)){
             Piece eatenPiece = chessboard[targetCoord.getX()][targetCoord.getY()];
-            if (eatenPiece.getPieceType() == PieceType.PAWN && eatenPiece.getPlayerColor() == opponentColor) {
+            //if (eatenPiece.getPieceType() == PieceType.PAWN && eatenPiece.getPlayerColor() == opponentColor) {
+            if (eatenPiece instanceof Pawn && eatenPiece.getPlayerColor() == opponentColor) {
                 if (((Pawn) eatenPiece).isLastMoveWasDoubleForward()) {
                     return eatenPiece;
                 }
@@ -156,7 +163,8 @@ public class Board implements Rule, ChessController {
     public void checkPromote(Pawn pawn) {
         for (int i = 0; i < 8; i++) {
             Piece piece = chessboard[i][7]; // 8ème rangée pour les pions blancs
-            if (piece != null && piece.getPieceType() == PieceType.PAWN && piece.getPlayerColor() == PlayerColor.WHITE) {
+            //if (piece != null && piece.getPieceType() == PieceType.PAWN && piece.getPlayerColor() == PlayerColor.WHITE) {
+            if (piece instanceof Pawn && piece.getPlayerColor() == PlayerColor.WHITE) {
                 promote((Pawn) piece);
             }
         }
@@ -164,7 +172,8 @@ public class Board implements Rule, ChessController {
         // Vérifier la première rangée pour les promotions de pions noirs
         for (int i = 0; i < 8; i++) {
             Piece piece = chessboard[i][0]; // 1ère rangée pour les pions noirs
-            if (piece != null && piece.getPieceType() == PieceType.PAWN && piece.getPlayerColor() == PlayerColor.BLACK) {
+            //if (piece != null && piece.getPieceType() == PieceType.PAWN && piece.getPlayerColor() == PlayerColor.BLACK) {
+            if (piece instanceof Pawn && piece.getPlayerColor() == PlayerColor.BLACK) {
                 promote((Pawn) piece);
             }
         }
@@ -411,8 +420,8 @@ public class Board implements Rule, ChessController {
                 if (x >= 0 && x < 8 && y >= 0 && y < 8 && chessboard[x][y] != null) {
                     Piece piece = chessboard[x][y];
                     // Vérifier si la pièce est une menace (Rook ou Queen de couleur opposée)
-                    if (piece.getPlayerColor() != king.getPlayerColor() &&
-                            (piece.getPieceType() == PieceType.ROOK || piece.getPieceType() == PieceType.QUEEN)) {
+                    if (piece.getPlayerColor() != king.getPlayerColor() && (piece instanceof Rook || piece instanceof Queen)){
+                            //(piece.getPieceType() == PieceType.ROOK || piece.getPieceType() == PieceType.QUEEN)) {
                         return true; // Roi en échec par une pièce horizontale/verticale
                     }
                     break; // S'il y a une pièce, arrêter de regarder plus loin dans cette direction
@@ -447,8 +456,8 @@ public class Board implements Rule, ChessController {
                 if (x >= 0 && x < 8 && y >= 0 && y < 8 && chessboard[x][y] != null) {
                     Piece piece = chessboard[x][y];
                     // Vérifier si la pièce est une menace (Bishop ou Queen de couleur opposée)
-                    if (piece.getPlayerColor() != king.getPlayerColor() &&
-                            (piece.getPieceType() == PieceType.BISHOP || piece.getPieceType() == PieceType.QUEEN)) {
+                    if (piece.getPlayerColor() != king.getPlayerColor() && (piece instanceof Bishop || piece instanceof Queen)){
+                            //(piece.getPieceType() == PieceType.BISHOP || piece.getPieceType() == PieceType.QUEEN)) {
                         return true; // Roi en échec par une pièce diagonale
                     }
                     break; // S'il y a une pièce sur la diagonale, arrêter de regarder plus loin
@@ -478,8 +487,8 @@ public class Board implements Rule, ChessController {
             if (x >= 0 && x < 8 && y >= 0 && y < 8) {
                 Piece piece = chessboard[x][y];
                 // Vérifier si une pièce est un cavalier ennemi
-                if (piece != null && piece.getPlayerColor() != king.getPlayerColor() &&
-                        piece.getPieceType() == PieceType.KNIGHT) {
+                if (piece != null && piece.getPlayerColor() != king.getPlayerColor() && piece instanceof  Knight){
+                        //piece.getPieceType() == PieceType.KNIGHT) {
                     return true; // Le roi est en échec par un cavalier
                 }
             }
@@ -511,8 +520,8 @@ public class Board implements Rule, ChessController {
             if (x >= 0 && x < 8 && y >= 0 && y < 8) {
                 Piece piece = chessboard[x][y];
                 // Vérifier si une pièce est un pion ennemi
-                if (piece != null && piece.getPlayerColor() != kingColor &&
-                        piece.getPieceType() == PieceType.PAWN) {
+                if (piece != null && piece.getPlayerColor() != kingColor && piece instanceof Pawn){
+                        //piece.getPieceType() == PieceType.PAWN) {
                     return true; // Le roi est en échec par un pion
                 }
             }
