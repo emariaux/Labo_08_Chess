@@ -18,27 +18,28 @@ public class Pawn extends Piece{
 
         int deltaX = to.getX() - this.getCoordinate().getX();
         int deltaY = to.getY() - this.getCoordinate().getY();
+
         if(this.getPlayerColor() == PlayerColor.WHITE){
             // Single step forward.
             if(deltaX == 0 && deltaY == 1){
+                this.lastMoveWasDoubleForward = false;
                 this.hasMoved = true;
             // Double step forward.
-            } else if (deltaX == 0 && deltaY == 2) {
+            } else if (deltaX == 0 && deltaY == 2 && !this.hasMoved){
                 this.hasMoved = true;
                 this.lastMoveWasDoubleForward = true;
-            // Diagonal step forward.
             } else {
                 return false;
             }
         } else if (getPlayerColor() == PlayerColor.BLACK) {
             // Single step downward.
             if(deltaX == 0 && deltaY == -1){
+                this.lastMoveWasDoubleForward = false;
                 this.hasMoved = true;
             // Double step downward.
-            } else if (deltaX == 0 && deltaY == -2) {
+            } else if (deltaX == 0 && deltaY == -2 && !this.hasMoved){
                 this.hasMoved = true;
                 this.lastMoveWasDoubleForward = true;
-            // Diagonal step downward.
             } else {
                 return false;
             }

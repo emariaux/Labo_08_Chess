@@ -57,12 +57,30 @@ public class Board implements Rule, ChessController {
             return false;
         }
 
+        // If the move is valid, check if the piece is a king and if it can castle.
+        if(!canMove && currentPiece.getPieceType() == PieceType.KING
+                && chessboard[toX][toY].getPieceType() == PieceType.ROOK
+                && currentPiece.getPlayerColor() == chessboard[toX][toY].getPlayerColor()) {
+            if (toX == 7) {
+                switchPlayer();
+                return isCastleKingSide((King) currentPiece, (Rook) chessboard[toX][toY]);
+            } else if (toX == 0) {
+                switchPlayer();
+                return isCastleQueenSide((King) currentPiece, (Rook) chessboard[toX][toY]);
+            }
+        }
+
         // If the piece is a pawn and the move is not valid, check if it can eat a piece
-        if(currentPiece.getPieceType() == PieceType.PAWN && !canMove && isOccupied(new Coordinate(toX, toY))){
-            eatenPiece = pawnEatPiece(new Coordinate(toX, toY), (Pawn) currentPiece);
+        if(currentPiece.getPieceType() == PieceType.PAWN && !canMove){
+            if(isOccupied(new Coordinate(toX, toY))){
+                eatenPiece = pawnEatPiece(new Coordinate(toX, toY), (Pawn) currentPiece);
+            }else{
+                eatenPiece = enPassant(new Coordinate(toX, toY), (Pawn) currentPiece);
+            }
             if(eatenPiece != null) {
                 canMove = true;
             }
+
         }
 
         //check if si empty between the two coordinates for bishop, rook and queen
@@ -111,8 +129,22 @@ public class Board implements Rule, ChessController {
     }
 
     @Override
-    public boolean enPassant(Coordinate to, Pawn pawn) {
-        return false;
+    public Piece enPassant(Coordinate to, Pawn pawn) {
+
+        int yOffset = pawn.getPlayerColor() == PlayerColor.WHITE ? -1 : 1;
+        PlayerColor opponentColor = pawn.getPlayerColor() == PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE;
+        Coordinate targetCoord = new Coordinate(to.getX(), to.getY() + yOffset);
+
+        if(isOccupied(targetCoord)){
+            Piece eatenPiece = chessboard[targetCoord.getX()][targetCoord.getY()];
+            if (eatenPiece.getPieceType() == PieceType.PAWN && eatenPiece.getPlayerColor() == opponentColor) {
+                if (((Pawn) eatenPiece).isLastMoveWasDoubleForward()) {
+                    return eatenPiece;
+                }
+            }
+
+        }
+        return null;
     }
 
     @Override
@@ -121,13 +153,31 @@ public class Board implements Rule, ChessController {
     }
 
     @Override
-    public void isCastleKingSide(Coordinate from, Coordinate to) {
+    public boolean isCastleKingSide(King king, Rook rook) {
+        if(!king.isHasMoved() && !rook.isHasMoved()){
+            List<Coordinate> path = rook.path(king.getCoordinate());
+            if(isEmptyBetween(path)) {
+                applyMove(king,null,king.getCoordinate().getX(), king.getCoordinate().getY(),6,king.getCoordinate().getY());
+                applyMove(rook,null,rook.getCoordinate().getX(), rook.getCoordinate().getY(),5,rook.getCoordinate().getY());
+                return true;
+            }
 
+        }
+        return false;
     }
 
     @Override
-    public void isCastleQueenSide(Coordinate from, Coordinate to) {
+    public boolean isCastleQueenSide(King king, Rook rook) {
+        if(!king.isHasMoved() && !rook.isHasMoved()){
+            List<Coordinate> path = rook.path(king.getCoordinate());
+            if(isEmptyBetween(path)) {
+                applyMove(king,null,king.getCoordinate().getX(), king.getCoordinate().getY(),2,king.getCoordinate().getY());
+                applyMove(rook,null,rook.getCoordinate().getX(), rook.getCoordinate().getY(),3,rook.getCoordinate().getY());
+                return true;
+            }
 
+        }
+        return false;
     }
 
     /***
@@ -179,6 +229,7 @@ public class Board implements Rule, ChessController {
         int cordX = piece.getCoordinate().getX();
         int cordY = piece.getCoordinate().getY();
         chessboard[cordX][cordY] = null;
+        view.removePiece(cordX, cordY);
     }
 
     /**

@@ -17,6 +17,10 @@ public class King extends Piece{
         isCheck = check;
     }
 
+    public boolean isHasMoved() {
+        return hasMoved;
+    }
+
 
 
     public King(Coordinate coordinate, PlayerColor playerColor) {
@@ -36,4 +40,6 @@ public class King extends Piece{
 
         return false;
     }
+
+
 }

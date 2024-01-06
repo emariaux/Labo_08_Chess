@@ -2,9 +2,9 @@ Reste à faire :
 
 [x] Réinitialiser board avec NewGame
 
-[] En prise en passant
+[X] En prise en passant
 
-[] Roque 
+[X] Roque 
 
 [] Promotion
 
