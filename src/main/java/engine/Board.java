@@ -54,10 +54,12 @@ public class Board implements Rule, ChessController {
         Piece eatenPiece = null;
         boolean canMove;
 
+        // If the starting coordinate is empty, the move is not valid.
         if(chessboard[fromX][fromY] == null){
             return false;
         }
 
+        // Check if the move is valid for the piece.
         canMove = currentPiece.isValidMove(new Coordinate(toX, toY));
 
         // If the move is valid, check if the destination is occupied by a piece of the same color.
@@ -67,21 +69,24 @@ public class Board implements Rule, ChessController {
         }
 
         // If the move is valid, check if the piece is a king and if it can castle.
-        if(!canMove && currentPiece instanceof King //&& currentPiece.getPieceType() == PieceType.KING
-                && chessboard[toX][toY] instanceof Rook
-                //&& chessboard[toX][toY].getPieceType() == PieceType.ROOK
+        if(!canMove && currentPiece instanceof King && chessboard[toX][toY] instanceof Rook
                 && currentPiece.getPlayerColor() == chessboard[toX][toY].getPlayerColor()) {
             if (toX == 7) {
-                switchPlayer();
-                return isCastleKingSide((King) currentPiece, (Rook) chessboard[toX][toY]);
+                if(isCastleKingSide((King) currentPiece, (Rook) chessboard[toX][toY]))
+                {
+                    switchPlayer();
+                    return true;
+                }
             } else if (toX == 0) {
-                switchPlayer();
-                return isCastleQueenSide((King) currentPiece, (Rook) chessboard[toX][toY]);
+                if(isCastleQueenSide((King) currentPiece, (Rook) chessboard[toX][toY]))
+                {
+                    switchPlayer();
+                    return true;
+                }
             }
         }
 
         // If the piece is a pawn and the move is not valid, check if it can eat a piece
-        //if(currentPiece.getPieceType() == PieceType.PAWN && !canMove){
         if(currentPiece instanceof Pawn && !canMove){
             if(isOccupied(new Coordinate(toX, toY))){
                 eatenPiece = pawnEatPiece(new Coordinate(toX, toY), (Pawn) currentPiece);
@@ -95,17 +100,10 @@ public class Board implements Rule, ChessController {
         }
 
         //check if si empty between the two coordinates for bishop, rook and queen
-        /**
-        if(canMove && (currentPiece.getPieceType() == PieceType.BISHOP
-                || currentPiece.getPieceType() == PieceType.ROOK
-                || currentPiece.getPieceType() == PieceType.QUEEN)){
-         **/
         if(canMove && (currentPiece instanceof Bishop || currentPiece instanceof Rook || currentPiece instanceof Queen)){
             List<Coordinate> path = currentPiece.path(new Coordinate(toX, toY));
             canMove = isEmptyBetween(path);
         }
-
-
 
         // If the move is valid, apply the move.
         if(canMove && currentPlayer == currentPiece.getPlayerColor()){
@@ -114,17 +112,13 @@ public class Board implements Rule, ChessController {
             }
             if(simulateMoveCheck(currentPiece, eatenPiece, fromX, fromY, toX, toY)){
                 applyMove(currentPiece, eatenPiece, fromX, fromY, toX, toY);
-                //if(currentPiece.getPieceType() == PieceType.PAWN) {
                 if(currentPiece instanceof Pawn){
                     checkPromote((Pawn) currentPiece);
                 }
             }else{
                 canMove = false;
             }
-
-
         }
-
         return canMove;
     }
 
@@ -139,11 +133,6 @@ public class Board implements Rule, ChessController {
         init();
     }
 
-    /*
-    public boolean isWithinBounds(Coordinate cord) {
-        return cord.getX() >= 0 && cord.getX() < size && cord.getY() >= 0 && cord.getY() < size;
-    }
-*/
     @Override
     public Piece enPassant(Coordinate to, Pawn pawn) {
 
@@ -153,7 +142,6 @@ public class Board implements Rule, ChessController {
 
         if(isOccupied(targetCoord)){
             Piece eatenPiece = chessboard[targetCoord.getX()][targetCoord.getY()];
-            //if (eatenPiece.getPieceType() == PieceType.PAWN && eatenPiece.getPlayerColor() == opponentColor) {
             if (eatenPiece instanceof Pawn && eatenPiece.getPlayerColor() == opponentColor) {
                 if (((Pawn) eatenPiece).isLastMoveWasDoubleForward()) {
                     return eatenPiece;
@@ -170,20 +158,16 @@ public class Board implements Rule, ChessController {
      * @param pawn : The pawn to check.
      */
     public void checkPromote(Pawn pawn) {
-        for (int i = 0; i < 8; i++) {
-            Piece piece = chessboard[i][7]; // 8 row for white pawns
-            //if (piece != null && piece.getPieceType() == PieceType.PAWN && piece.getPlayerColor() == PlayerColor.WHITE) {
-            if (piece instanceof Pawn && piece.getPlayerColor() == PlayerColor.WHITE) {
-                promote((Pawn) piece);
+
+        if(pawn.getPlayerColor() == PlayerColor.WHITE){
+            if(pawn.getCoordinate().getY() == 7){
+                promote(pawn);
             }
         }
 
-        // Vérifier la première rangée pour les promotions de pions noirs
-        for (int i = 0; i < 8; i++) {
-            Piece piece = chessboard[i][0]; // 1ère rangée pour les pions noirs
-            //if (piece != null && piece.getPieceType() == PieceType.PAWN && piece.getPlayerColor() == PlayerColor.BLACK) {
-            if (piece instanceof Pawn && piece.getPlayerColor() == PlayerColor.BLACK) {
-                promote((Pawn) piece);
+        if(pawn.getPlayerColor() == PlayerColor.BLACK){
+            if(pawn.getCoordinate().getY() == 0){
+                promote(pawn);
             }
         }
     }
@@ -327,13 +311,11 @@ public class Board implements Rule, ChessController {
      * @return     : True if the path is empty, false otherwise.
      */
     public boolean isEmptyBetween(List<Coordinate> path){
-
         for(Coordinate cord : path){
             if(isOccupied(cord)){
                 return false;
             }
         }
-
         return true;
     }
 
@@ -387,6 +369,10 @@ public class Board implements Rule, ChessController {
         return null;
     }
 
+    /***
+     * Checks if the king of the current player is in check.
+     * @return : True if the king is in check, false otherwise.
+     */
     private boolean verifyCheck(){
 
         King king = currentPlayer == PlayerColor.WHITE ? whiteKing : blackKing;
@@ -411,11 +397,13 @@ public class Board implements Rule, ChessController {
             return true;
         }
 
-
-
         return false;
     }
 
+    /***
+     * Sets the check status of the king in parameter.
+     * @param king : The king to set the check status.
+     */
     private void setCheck(King king){
         king.setCheck(true);
 
@@ -426,140 +414,164 @@ public class Board implements Rule, ChessController {
         }
     }
 
+    /***
+     * Checks if the king is in check by a piece on the horizontal or vertical axis.
+     * @param king : The king to check.
+     * @return     : True if the king is in check by a piece on the horizontal or vertical axis, false otherwise.
+     */
     private boolean horizontalVerticalCheck(King king) {
         int kingX = king.getCoordinate().getX();
         int kingY = king.getCoordinate().getY();
 
-        // Définir les directions horizontales et verticales
-        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}; // droite, gauche, bas, haut
+        // Define horizontal and vertical directions
+        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}; // right, left, down, up
 
-        // Parcourir chaque direction horizontale et verticale
+        // Check each horizontal and vertical direction
         for (int[] direction : directions) {
             int dx = direction[0];
             int dy = direction[1];
             int x = kingX;
             int y = kingY;
 
-            // Parcourir la ligne ou la colonne
+            // Check the line or column
             while (x >= 0 && x < 8 && y >= 0 && y < 8) {
                 x += dx;
                 y += dy;
 
-                // Vérifier si la case est dans les limites et occupée
+                // Check if the square is within bounds and occupied
                 if (x >= 0 && x < 8 && y >= 0 && y < 8 && chessboard[x][y] != null) {
                     Piece piece = chessboard[x][y];
-                    // Vérifier si la pièce est une menace (Rook ou Queen de couleur opposée)
+                    // Check if the piece is a threat (Rook or Queen of opposite color)
                     if (piece.getPlayerColor() != king.getPlayerColor() && (piece instanceof Rook || piece instanceof Queen)){
-                            //(piece.getPieceType() == PieceType.ROOK || piece.getPieceType() == PieceType.QUEEN)) {
-                        return true; // Roi en échec par une pièce horizontale/verticale
+                        return true; // King in check by a horizontal or vertical piece
                     }
-                    break; // S'il y a une pièce, arrêter de regarder plus loin dans cette direction
+                    break; // If there is a piece on the line or column, stop looking further
                 }
             }
         }
 
-        return false; // Aucune menace trouvée horizontalement ou verticalement
+        return false; // No horizontal or vertical threat found
     }
 
-
+    /***
+     * Checks if the king is in check by a piece on the diagonal axis.
+     * @param king : The king to check.
+     * @return     : True if the king is in check by a piece on the diagonal axis, false otherwise.
+     */
     private boolean diagonalCheck(King king) {
         int kingX = king.getCoordinate().getX();
         int kingY = king.getCoordinate().getY();
 
-        // Définition des directions diagonales : (dx, dy)
+        // Define diagonal directions: (dx, dy)
         int[][] directions = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
-        // Parcourir chaque direction diagonale
+       // Check each diagonal direction
         for (int[] direction : directions) {
             int dx = direction[0];
             int dy = direction[1];
             int x = kingX;
             int y = kingY;
 
-            // Parcourir la diagonale
+            // Check the diagonal
             while (x >= 0 && x < 8 && y >= 0 && y < 8) {
                 x += dx;
                 y += dy;
 
-                // Vérifier si la case est dans les limites du plateau et occupée
+               // Check if the square is within bounds and occupied
                 if (x >= 0 && x < 8 && y >= 0 && y < 8 && chessboard[x][y] != null) {
                     Piece piece = chessboard[x][y];
-                    // Vérifier si la pièce est une menace (Bishop ou Queen de couleur opposée)
+                    // Check if the piece is a threat (Bishop or Queen of opposite color)
                     if (piece.getPlayerColor() != king.getPlayerColor() && (piece instanceof Bishop || piece instanceof Queen)){
-                            //(piece.getPieceType() == PieceType.BISHOP || piece.getPieceType() == PieceType.QUEEN)) {
-                        return true; // Roi en échec par une pièce diagonale
+                        return true; // King in check by a diagonal piece
                     }
-                    break; // S'il y a une pièce sur la diagonale, arrêter de regarder plus loin
+                    break; // If there is a piece on the diagonal, stop looking further
                 }
             }
         }
 
-        return false; // Aucune menace trouvée en diagonale
+        return false; // No diagonal threat found
     }
 
+    /***
+     * Checks if the king is in check by a knight.
+     * @param king : The king to check.
+     * @return     : True if the king is in check by a knight, false otherwise.
+     */
     private boolean knightCheck(King king) {
         int kingX = king.getCoordinate().getX();
         int kingY = king.getCoordinate().getY();
 
-        // Les mouvements possibles d'un cavalier à partir d'une position donnée
+        // Define knight moves: (dx, dy)
         int[][] knightMoves = {
-                {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, // Mouvements verticaux longs
-                {1, 2}, {-1, 2}, {1, -2}, {-1, -2}  // Mouvements horizontaux longs
+                {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, // Long vertical moves
+                {1, 2}, {-1, 2}, {1, -2}, {-1, -2}  // Long horizontal moves
         };
 
-        // Vérifier chaque mouvement possible du cavalier
+        // Check each knight move
         for (int[] move : knightMoves) {
             int x = kingX + move[0];
             int y = kingY + move[1];
 
-            // Vérifier si la position est dans les limites du plateau
+            // Check if the position is within bounds
             if (x >= 0 && x < 8 && y >= 0 && y < 8) {
                 Piece piece = chessboard[x][y];
-                // Vérifier si une pièce est un cavalier ennemi
+                // Check if a piece is a knight of opposite color
                 if (piece != null && piece.getPlayerColor() != king.getPlayerColor() && piece instanceof  Knight){
-                        //piece.getPieceType() == PieceType.KNIGHT) {
-                    return true; // Le roi est en échec par un cavalier
+                    return true; // King in check by a knight
                 }
             }
         }
 
-        return false; // Aucun cavalier ennemi menaçant trouvé
+        return false; // No knight threat found
     }
 
+    /***
+     * Checks if the king is in check by a pawn.
+     * @param king : The king to check.
+     * @return     : True if the king is in check by a pawn, false otherwise.
+     */
     private boolean pawnCheck(King king) {
         int kingX = king.getCoordinate().getX();
         int kingY = king.getCoordinate().getY();
         PlayerColor kingColor = king.getPlayerColor();
 
-        // Déterminer la direction de l'attaque du pion en fonction de la couleur du roi
+        // Determine the direction of the pawn attack based on the king's color
         int pawnDirection = (kingColor == PlayerColor.WHITE) ? 1 : -1; // Les pions blancs se déplacent vers le haut (-1), les noirs vers le bas (+1)
 
-        // Les positions en diagonale où un pion pourrait attaquer
+        // Diagonal positions where a pawn could attack
         int[][] pawnAttacks = {
-                {1, pawnDirection},  // diagonale droite
-                {-1, pawnDirection}  // diagonale gauche
+                {1, pawnDirection},  // right diagonal
+                {-1, pawnDirection}  // left diagonal
         };
 
-        // Vérifier les deux cases en diagonale devant le roi pour une menace de pion
+        // Check each diagonal position
         for (int[] attack : pawnAttacks) {
             int x = kingX + attack[0];
             int y = kingY + attack[1];
 
-            // Vérifier si la position est dans les limites du plateau
+            // Check if the position is within bounds
             if (x >= 0 && x < 8 && y >= 0 && y < 8) {
                 Piece piece = chessboard[x][y];
-                // Vérifier si une pièce est un pion ennemi
+                // Check if a piece is a pawn of opposite color
                 if (piece != null && piece.getPlayerColor() != kingColor && piece instanceof Pawn){
-                        //piece.getPieceType() == PieceType.PAWN) {
-                    return true; // Le roi est en échec par un pion
+                    return true; // King in check by a pawn
                 }
             }
         }
 
-        return false; // Aucun pion ennemi menaçant trouvé
+        return false; // No pawn threat found
     }
 
-
+    /***
+     * Simulates a move to check if the king is in check after the move.
+     * @param currentPiece  : The piece to move.
+     * @param eatenPiece    : The piece to eat.
+     * @param fromX         : The x coordinate of the piece to move.
+     * @param fromY         : The y coordinate of the piece to move.
+     * @param toX           : The x coordinate of the destination.
+     * @param toY           : The y coordinate of the destination.
+     * @return              : True if the king is not in check after the move, false otherwise.
+     */
     private boolean simulateMoveCheck(Piece currentPiece, Piece eatenPiece, int fromX, int fromY, int toX, int toY){
 
         boolean valideMove;
@@ -583,7 +595,5 @@ public class Board implements Rule, ChessController {
         }
         return valideMove;
     }
-
-
 
 }
