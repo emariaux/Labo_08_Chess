@@ -20,12 +20,20 @@ public class Board implements Rule, ChessController {
     private King whiteKing;
     private King blackKing;
 
+    /***
+     * Constructor.
+     * @param size : The size of the chessboard.
+     */
     public Board(int size){
         this.size = size;
         this.chessboard = new Piece[size][size];
         this.currentPlayer = PlayerColor.WHITE;
     }
 
+    /***
+     * Starts the game.
+     * @param view la vue à utiliser
+     */
     @Override
     public void start(ChessView view) {
         this.view = view;
@@ -131,11 +139,11 @@ public class Board implements Rule, ChessController {
         init();
     }
 
-
+    /*
     public boolean isWithinBounds(Coordinate cord) {
         return cord.getX() >= 0 && cord.getX() < size && cord.getY() >= 0 && cord.getY() < size;
     }
-
+*/
     @Override
     public Piece enPassant(Coordinate to, Pawn pawn) {
 
@@ -157,9 +165,13 @@ public class Board implements Rule, ChessController {
     }
 
 
+    /***
+     * Checks if a pawn can be promoted.
+     * @param pawn : The pawn to check.
+     */
     public void checkPromote(Pawn pawn) {
         for (int i = 0; i < 8; i++) {
-            Piece piece = chessboard[i][7]; // 8ème rangée pour les pions blancs
+            Piece piece = chessboard[i][7]; // 8 row for white pawns
             //if (piece != null && piece.getPieceType() == PieceType.PAWN && piece.getPlayerColor() == PlayerColor.WHITE) {
             if (piece instanceof Pawn && piece.getPlayerColor() == PlayerColor.WHITE) {
                 promote((Pawn) piece);
@@ -176,15 +188,20 @@ public class Board implements Rule, ChessController {
         }
     }
 
+    /***
+     * Promotes a pawn to a piece chosen by the user.
+     * @param pawn : The pawn to promote.
+     */
     @Override
     public void promote(Pawn pawn) {
+
+        // The choices for the user.
         Piece[] choices = {
                 new Queen(pawn.getCoordinate(), pawn.getPlayerColor()),
                 new Knight(pawn.getCoordinate(), pawn.getPlayerColor()),
                 new Rook(pawn.getCoordinate(), pawn.getPlayerColor()),
                 new Bishop(pawn.getCoordinate(), pawn.getPlayerColor())
         };
-        List<Piece> pieces = List.of(choices);
 
         Piece userChoice;
 
@@ -192,15 +209,22 @@ public class Board implements Rule, ChessController {
             userChoice = view.askUser("Promotion", "Choose a piece to promote to", choices);
         } while (userChoice == null);
 
-        //chessboard[pawn.getCoordinate().getX()][pawn.getCoordinate().getY()] = userChoice;
         removePiece(pawn);
         addPiece(userChoice);
     }
 
+    /***
+     * Castle king side if possible.
+     * @param king : The king for the castle.
+     * @param rook : The rook for the castle.
+     * @return : True if the castle was successful, false otherwise.
+     */
     @Override
     public boolean isCastleKingSide(King king, Rook rook) {
+        //Check if the king and the rook have already moved
         if(!king.isHasMoved() && !rook.isHasMoved()){
             List<Coordinate> path = rook.path(king.getCoordinate());
+            //Check if the path is empty
             if(isEmptyBetween(path)) {
                 applyMove(king,null,king.getCoordinate().getX(), king.getCoordinate().getY(),6,king.getCoordinate().getY());
                 applyMove(rook,null,rook.getCoordinate().getX(), rook.getCoordinate().getY(),5,rook.getCoordinate().getY());
@@ -211,10 +235,18 @@ public class Board implements Rule, ChessController {
         return false;
     }
 
+    /***
+     * Castle queen side if possible.
+     * @param king : The king for the castle.
+     * @param rook : The rook for the castle.
+     * @return : True if the castle was successful, false otherwise.
+     */
     @Override
     public boolean isCastleQueenSide(King king, Rook rook) {
+        //Check if the king and the rook have already moved
         if(!king.isHasMoved() && !rook.isHasMoved()){
             List<Coordinate> path = rook.path(king.getCoordinate());
+            //Check if the path is empty
             if(isEmptyBetween(path)) {
                 applyMove(king,null,king.getCoordinate().getX(), king.getCoordinate().getY(),2,king.getCoordinate().getY());
                 applyMove(rook,null,rook.getCoordinate().getX(), rook.getCoordinate().getY(),3,rook.getCoordinate().getY());
