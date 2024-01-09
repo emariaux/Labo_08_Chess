@@ -20,6 +20,8 @@ public class Board implements Rule, ChessController {
     private King whiteKing;
     private King blackKing;
 
+    Coordinate[] lastMove = new Coordinate[2];
+
     /***
      * Constructor.
      */
@@ -84,7 +86,7 @@ public class Board implements Rule, ChessController {
         if(currentPiece instanceof Pawn && !canMove){
             if(isOccupied(new Coordinate(toX, toY))){
                 eatenPiece = pawnEatPiece(new Coordinate(toX, toY), (Pawn) currentPiece);
-            }else{
+            }else if(canEnPassant((Pawn) currentPiece)){
                 eatenPiece = enPassant(new Coordinate(toX, toY), (Pawn) currentPiece);
             }
             if(eatenPiece != null) {
@@ -126,6 +128,28 @@ public class Board implements Rule, ChessController {
 
         init();
     }
+
+    private boolean canEnPassant(Pawn pawn) {
+        // Suppose that the lastMove is a variable storing the last move
+        if (lastMove[0] == null || !(chessboard[lastMove[1].getX()][lastMove[1].getY()] instanceof Pawn)) {
+            return false;
+        }
+
+        // Verify if the last move was a double step of a pawn
+        if (Math.abs(lastMove[0].getY() - lastMove[1].getY()) == 2) {
+            // Verify if the last move was on the same row as the pawn
+            int deltaY = pawn.getPlayerColor() == PlayerColor.WHITE ? 1 : -1;
+            Coordinate lastMovePawnPosition = lastMove[1];
+            if (lastMovePawnPosition.getY() == pawn.getCoordinate().getY()
+                    && (lastMovePawnPosition.getX() == pawn.getCoordinate().getX() + 1
+                    || lastMovePawnPosition.getX() == pawn.getCoordinate().getX() - 1)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     @Override
     public Piece enPassant(Coordinate to, Pawn pawn) {
@@ -353,6 +377,8 @@ public class Board implements Rule, ChessController {
             removePiece(eatenPiece);
         }
 
+        lastMove[0] = new Coordinate(fromX, fromY);
+        lastMove[1] = new Coordinate(toX, toY);
         chessboard[toX][toY] = currentPiece;
         currentPiece.setCoordinate(new Coordinate(toX, toY));
         chessboard[fromX][fromY] = null;
