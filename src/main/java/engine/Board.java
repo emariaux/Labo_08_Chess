@@ -15,17 +15,15 @@ public class Board implements Rule, ChessController {
     // The chessboard is represented as a 2D array of pieces.
     private Piece[][] chessboard;
 
-    private final int size;
+    private final int size = 8;
 
     private King whiteKing;
     private King blackKing;
 
     /***
      * Constructor.
-     * @param size : The size of the chessboard.
      */
-    public Board(int size){
-        this.size = size;
+    public Board(){
         this.chessboard = new Piece[size][size];
         this.currentPlayer = PlayerColor.WHITE;
     }
@@ -147,7 +145,6 @@ public class Board implements Rule, ChessController {
                     return eatenPiece;
                 }
             }
-
         }
         return null;
     }
@@ -160,7 +157,7 @@ public class Board implements Rule, ChessController {
     public void checkPromote(Pawn pawn) {
 
         if(pawn.getPlayerColor() == PlayerColor.WHITE){
-            if(pawn.getCoordinate().getY() == 7){
+            if(pawn.getCoordinate().getY() == size - 1){
                 promote(pawn);
             }
         }
@@ -478,12 +475,12 @@ public class Board implements Rule, ChessController {
             int y = kingY;
 
             // Check the diagonal
-            while (x >= 0 && x < 8 && y >= 0 && y < 8) {
+            while (x >= 0 && x < 8 && y >= 0 && y < size) {
                 x += dx;
                 y += dy;
 
                // Check if the square is within bounds and occupied
-                if (x >= 0 && x < 8 && y >= 0 && y < 8 && chessboard[x][y] != null) {
+                if (x >= 0 && x < 8 && y >= 0 && y < size && chessboard[x][y] != null) {
                     Piece piece = chessboard[x][y];
                     // Check if the piece is a threat (Bishop or Queen of opposite color)
                     if (piece.getPlayerColor() != king.getPlayerColor() && (piece instanceof Bishop || piece instanceof Queen)){
@@ -518,7 +515,7 @@ public class Board implements Rule, ChessController {
             int y = kingY + move[1];
 
             // Check if the position is within bounds
-            if (x >= 0 && x < 8 && y >= 0 && y < 8) {
+            if (x >= 0 && x < 8 && y >= 0 && y < size) {
                 Piece piece = chessboard[x][y];
                 // Check if a piece is a knight of opposite color
                 if (piece != null && piece.getPlayerColor() != king.getPlayerColor() && piece instanceof  Knight){
@@ -555,7 +552,7 @@ public class Board implements Rule, ChessController {
             int y = kingY + attack[1];
 
             // Check if the position is within bounds
-            if (x >= 0 && x < 8 && y >= 0 && y < 8) {
+            if (x >= 0 && x < size && y >= 0 && y < size) {
                 Piece piece = chessboard[x][y];
                 // Check if a piece is a pawn of opposite color
                 if (piece != null && piece.getPlayerColor() != kingColor && piece instanceof Pawn){

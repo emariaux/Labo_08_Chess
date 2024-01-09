@@ -8,7 +8,7 @@ public class consoleMode {
 
     public static void main(String [] args) {
 
-        ChessController controller = new Board(8);
+        ChessController controller = new Board();
 
         ChessView view = new ConsoleView(controller);
 
