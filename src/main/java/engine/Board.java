@@ -397,6 +397,11 @@ public class Board implements Rule, ChessController {
             return true;
         }
 
+        if(kingCheck(king)){
+            setCheck(king);
+            return true;
+        }
+
         return false;
     }
 
@@ -561,6 +566,32 @@ public class Board implements Rule, ChessController {
 
         return false; // No pawn threat found
     }
+
+    /***
+     * Checks if the king is in check by the other king.
+     * @param king : The king to check.
+     * @return     : True if the king is in check by the other king, false otherwise.
+     */
+    private boolean kingCheck(King king) {
+
+        King oppositeKing = king.getPlayerColor() == PlayerColor.WHITE ? blackKing : whiteKing;
+
+        int kingX = king.getCoordinate().getX();
+        int kingY = king.getCoordinate().getY();
+        int opposingKingX = oppositeKing.getCoordinate().getX();
+        int opposingKingY = oppositeKing.getCoordinate().getY();
+
+        // Check if the kings are adjacent to each other
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if ((kingX + dx == opposingKingX) && (kingY + dy == opposingKingY)) {
+                    return true; // King in check by the other king
+                }
+            }
+        }
+        return false;
+    }
+
 
     /***
      * Simulates a move to check if the king is in check after the move.
