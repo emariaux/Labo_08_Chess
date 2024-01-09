@@ -7,7 +7,7 @@ public interface Rule {
 
     public void promote(Pawn pawn);
 
-    public boolean isCastleKingSide(King king, Rook rook);
+    public boolean castleKingSide(King king, Rook rook);
 
-    public boolean isCastleQueenSide(King king, Rook rook);
+    public boolean castleQueenSide(King king, Rook rook);
 }

@@ -30,10 +30,7 @@ public abstract class Piece implements MoveValidator, ChessView.UserChoice {
     public abstract List<Coordinate> path(Coordinate to);
 
     @Override
-    public boolean isValidMove(Coordinate to) {
-
-        return false;
-    }
+    public abstract boolean isValidMove(Coordinate to);
 
     public Coordinate getCoordinate() {
         return coordinate;

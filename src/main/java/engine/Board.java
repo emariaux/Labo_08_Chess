@@ -66,22 +66,18 @@ public class Board implements Rule, ChessController {
             return false;
         }
 
+        // If the move is valid, check if the piece is a pawn. This one can't move if the destination is occupied.
+        if(canMove && currentPiece instanceof Pawn && isOccupied(new Coordinate(toX, toY))){
+            return false;
+        }
+
+
         // If the move is valid, check if the piece is a king and if it can castle.
+        // castle apply the move if it's possible
         if(!canMove && currentPiece instanceof King && chessboard[toX][toY] instanceof Rook
-                && currentPiece.getPlayerColor() == chessboard[toX][toY].getPlayerColor()) {
-            if (toX == 7) {
-                if(isCastleKingSide((King) currentPiece, (Rook) chessboard[toX][toY]))
-                {
-                    switchPlayer();
-                    return true;
-                }
-            } else if (toX == 0) {
-                if(isCastleQueenSide((King) currentPiece, (Rook) chessboard[toX][toY]))
-                {
-                    switchPlayer();
-                    return true;
-                }
-            }
+                && currentPiece.getPlayerColor() == chessboard[toX][toY].getPlayerColor()
+                && castle((King) currentPiece,toX,toY) ) {
+            return true;
         }
 
         // If the piece is a pawn and the move is not valid, check if it can eat a piece
@@ -195,13 +191,39 @@ public class Board implements Rule, ChessController {
     }
 
     /***
+     * Checks if a castle is possible.
+     * @param king          : The king to castle.
+     * @param toX           : The x coordinate of the rook to castle.
+     * @param toY           : The y coordinate of the rook to castle.
+     * @return              : True if the castle is possible, false otherwise.
+     */
+    public boolean castle(King king, int toX, int toY){
+
+        if (toX == 7) {
+            if(castleKingSide(king, (Rook) chessboard[toX][toY]))
+            {
+                switchPlayer();
+                return true;
+            }
+        } else if (toX == 0) {
+            if(castleQueenSide(king, (Rook) chessboard[toX][toY]))
+            {
+                switchPlayer();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /***
      * Castle king side if possible.
      * @param king : The king for the castle.
      * @param rook : The rook for the castle.
      * @return : True if the castle was successful, false otherwise.
      */
     @Override
-    public boolean isCastleKingSide(King king, Rook rook) {
+    public boolean castleKingSide(King king, Rook rook) {
         //Check if the king and the rook have already moved
         if(!king.isHasMoved() && !rook.isHasMoved()){
             List<Coordinate> path = rook.path(king.getCoordinate());
@@ -223,7 +245,7 @@ public class Board implements Rule, ChessController {
      * @return : True if the castle was successful, false otherwise.
      */
     @Override
-    public boolean isCastleQueenSide(King king, Rook rook) {
+    public boolean castleQueenSide(King king, Rook rook) {
         //Check if the king and the rook have already moved
         if(!king.isHasMoved() && !rook.isHasMoved()){
             List<Coordinate> path = rook.path(king.getCoordinate());
@@ -589,7 +611,6 @@ public class Board implements Rule, ChessController {
         return false;
     }
 
-
     /***
      * Simulates a move to check if the king is in check after the move.
      * @param currentPiece  : The piece to move.
@@ -623,5 +644,4 @@ public class Board implements Rule, ChessController {
         }
         return valideMove;
     }
-
 }

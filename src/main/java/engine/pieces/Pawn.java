@@ -19,46 +19,20 @@ public class Pawn extends Piece{
     
     @Override
     public boolean isValidMove(Coordinate to) {
-        super.isValidMove(to);
-
         int deltaX = to.getX() - this.getCoordinate().getX();
         int deltaY = to.getY() - this.getCoordinate().getY();
 
-        if(this.getPlayerColor() == PlayerColor.WHITE){
-            // Single step forward.
-            if(deltaX == 0 && deltaY == 1){
-                this.lastMoveWasDoubleForward = false;
-                this.hasMoved = true;
-            // Double step forward.
-            } else if (deltaX == 0 && deltaY == 2 && !this.hasMoved){
-                this.hasMoved = true;
-                this.lastMoveWasDoubleForward = true;
-            } else {
-                return false;
-            }
-        } else if (getPlayerColor() == PlayerColor.BLACK) {
-            // Single step downward.
-            if(deltaX == 0 && deltaY == -1){
-                this.lastMoveWasDoubleForward = false;
-                this.hasMoved = true;
-            // Double step downward.
-            } else if (deltaX == 0 && deltaY == -2 && !this.hasMoved){
-                this.hasMoved = true;
-                this.lastMoveWasDoubleForward = true;
-            } else {
-                return false;
-            }
+        // Detemine the forward step depending on the player's color
+        int forwardStep = (this.getPlayerColor() == PlayerColor.WHITE) ? 1 : -1;
+
+        // Check if the move is a single or double step forward
+        if (deltaX == 0 && (deltaY == forwardStep || (deltaY == 2 * forwardStep && !this.hasMoved))) {
+            this.hasMoved = true;
+            this.lastMoveWasDoubleForward = deltaY == 2 * forwardStep;
+            return true;
         }
 
-        return true;
-    }
-
-    private boolean verifyStep(Coordinate to, int nbSteps){
-        if(nbSteps == 1 || nbSteps == 2){
-            return to.getY() == this.getCoordinate().getY() + nbSteps;
-        }
         return false;
-
     }
 
     public boolean isHasMoved() {
