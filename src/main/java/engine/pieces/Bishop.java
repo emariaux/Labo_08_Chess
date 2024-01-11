@@ -18,11 +18,7 @@ public class Bishop extends Piece{
 
 
         // Verify if the move is diagonal (same horizontal and vertical move)
-        if (Math.abs(deltaX) == Math.abs(deltaY) && (deltaX != 0 || deltaY != 0)) {
-            return true;
-        }
-
-        return false;
+        return Math.abs(deltaX) == Math.abs(deltaY) && (deltaX != 0 || deltaY != 0);
     }
 
     @Override

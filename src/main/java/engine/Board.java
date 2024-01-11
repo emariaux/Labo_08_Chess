@@ -138,13 +138,10 @@ public class Board implements Rule, ChessController {
         // Verify if the last move was a double step of a pawn
         if (Math.abs(lastMove[0].getY() - lastMove[1].getY()) == 2) {
             // Verify if the last move was on the same row as the pawn
-            int deltaY = pawn.getPlayerColor() == PlayerColor.WHITE ? 1 : -1;
             Coordinate lastMovePawnPosition = lastMove[1];
-            if (lastMovePawnPosition.getY() == pawn.getCoordinate().getY()
+            return lastMovePawnPosition.getY() == pawn.getCoordinate().getY()
                     && (lastMovePawnPosition.getX() == pawn.getCoordinate().getX() + 1
-                    || lastMovePawnPosition.getX() == pawn.getCoordinate().getX() - 1)) {
-                return true;
-            }
+                    || lastMovePawnPosition.getX() == pawn.getCoordinate().getX() - 1);
         }
 
         return false;
@@ -460,9 +457,7 @@ public class Board implements Rule, ChessController {
      */
     private void setCheck(King king){
         king.setCheck(true);
-
         view.displayMessage("Check!");
-
     }
 
     /***

@@ -18,12 +18,9 @@ public class Queen extends Piece{
         int deltaY = to.getY() - this.getCoordinate().getY();
 
         //
-        if(((to.getX() == this.getCoordinate().getX() || to.getY() == this.getCoordinate().getY())
-                ||(Math.abs(deltaX) == Math.abs(deltaY)))
-                && (deltaX != 0 || deltaY != 0)){
-            return true;
-        }
-        return false;
+        return ((to.getX() == this.getCoordinate().getX() || to.getY() == this.getCoordinate().getY())
+                || (Math.abs(deltaX) == Math.abs(deltaY)))
+                && (deltaX != 0 || deltaY != 0);
     }
 
     @Override

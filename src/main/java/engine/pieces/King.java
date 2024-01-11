@@ -9,10 +9,6 @@ public class King extends Piece{
     private boolean hasMoved = false;
     private boolean isCheck = false;
 
-    public boolean isCheck() {
-        return isCheck;
-    }
-
     public void setCheck(boolean check) {
         isCheck = check;
     }
