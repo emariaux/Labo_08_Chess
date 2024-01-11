@@ -385,9 +385,13 @@ public class Board implements Rule, ChessController {
         view.putPiece(currentPiece.getPieceType(), currentPiece.getPlayerColor(), toX, toY);
         view.removePiece(fromX, fromY);
 
-
         // Sets the turn to play to the other color.
         switchPlayer();
+
+        //Verify check for the next player
+        if(verifyCheck()){
+            setCheck(currentPlayer == PlayerColor.WHITE ? whiteKing : blackKing);
+        }
     }
 
     /***
@@ -457,11 +461,8 @@ public class Board implements Rule, ChessController {
     private void setCheck(King king){
         king.setCheck(true);
 
-        if(king.getPlayerColor() == PlayerColor.WHITE){
-            view.displayMessage("Echec roi blanc");
-        } else {
-            view.displayMessage("Echec roi noir");
-        }
+        view.displayMessage("Check!");
+
     }
 
     /***
